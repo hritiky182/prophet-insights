@@ -9,6 +9,8 @@ export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState("amir.khan@visioncapital.com");
   const [password, setPassword] = useState("••••••••••••");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,11 +38,11 @@ export default function Login() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !company || !password || !confirmPassword) {
+    if (!name || !regEmail || !company || !regPassword || !confirmPassword) {
       toast.error("Please fill in all fields.");
       return;
     }
-    if (password !== confirmPassword) {
+    if (regPassword !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
@@ -53,7 +55,7 @@ export default function Login() {
     setTimeout(() => {
       setIsLoading(false);
       localStorage.setItem("auth_token", "demo-token-67890");
-      localStorage.setItem("user_email", email);
+      localStorage.setItem("user_email", regEmail);
       localStorage.setItem("user_name", name);
       toast.success(`Welcome to Terravue, ${name}! Your account is active.`);
       navigate("/", { replace: true });
@@ -237,6 +239,7 @@ export default function Login() {
                   transition={{ duration: 0.3 }}
                   onSubmit={handleRegister}
                   className="space-y-4"
+                  autoComplete="off"
                 >
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-muted-foreground" htmlFor="name">
@@ -270,9 +273,10 @@ export default function Login() {
                         id="reg-email"
                         type="email"
                         required
+                        autoComplete="new-email"
                         placeholder="name@company.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={regEmail}
+                        onChange={(e) => setRegEmail(e.target.value)}
                         className="w-full rounded-xl border border-border/50 bg-background/50 py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-muted-foreground/50 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] transition-all"
                       />
                     </div>
@@ -308,9 +312,10 @@ export default function Login() {
                           id="reg-pass"
                           type="password"
                           required
+                          autoComplete="new-password"
                           placeholder="••••••••"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          value={regPassword}
+                          onChange={(e) => setRegPassword(e.target.value)}
                           className="w-full rounded-xl border border-border/50 bg-background/50 py-2.5 px-3 text-sm text-white placeholder:text-muted-foreground/50 focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] transition-all"
                         />
                       </div>
@@ -324,6 +329,7 @@ export default function Login() {
                           id="confirm-pass"
                           type="password"
                           required
+                          autoComplete="new-password"
                           placeholder="••••••••"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
