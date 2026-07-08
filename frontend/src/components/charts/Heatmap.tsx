@@ -13,8 +13,8 @@ export function Heatmap({ data, xLabels, yLabels }: {
         <thead>
           <tr>
             <th />
-            {xLabels?.map((l) => (
-              <th key={l} className="text-[10px] font-medium text-muted-foreground">{l}</th>
+            {xLabels?.map((l, i) => (
+              <th key={i} className="text-[10px] font-medium text-muted-foreground">{l}</th>
             ))}
           </tr>
         </thead>

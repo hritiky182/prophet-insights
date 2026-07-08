@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/mock/api";
 import { popularSearches, recentSearches } from "@/mock/data";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { cls } from "@/utils/format";
+import { toast } from "sonner";
 
 interface Props {
   onOpenSidebar: () => void;
@@ -14,7 +16,36 @@ export function TopBar({ onOpenSidebar }: Props) {
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState<Awaited<ReturnType<typeof api.search>> | null>(null);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [selectedWorkspace, setSelectedWorkspace] = useState("Vision Capital");
+  const navigate = useNavigate();
   const wrapRef = useRef<HTMLDivElement>(null);
+
+  const [userName, setUserName] = useState(() => localStorage.getItem("user_name") || "Amir Khan");
+  const [userEmail, setUserEmail] = useState(() => localStorage.getItem("user_email") || "amir.khan@visioncapital.com");
+  const [userTitle, setUserTitle] = useState(() => localStorage.getItem("user_title") || "Chief Investment Officer");
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      setUserName(localStorage.getItem("user_name") || "Amir Khan");
+      setUserEmail(localStorage.getItem("user_email") || "amir.khan@visioncapital.com");
+      setUserTitle(localStorage.getItem("user_title") || "Chief Investment Officer");
+    };
+    window.addEventListener("profile-update", handleProfileUpdate);
+    window.addEventListener("storage", handleProfileUpdate);
+    return () => {
+      window.removeEventListener("profile-update", handleProfileUpdate);
+      window.removeEventListener("storage", handleProfileUpdate);
+    };
+  }, []);
+
+  const userInitials = userName
+    .split(" ")
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   useEffect(() => {
     if (!q) {
@@ -107,9 +138,51 @@ export function TopBar({ onOpenSidebar }: Props) {
       </div>
 
       <div className="ml-auto flex items-center gap-2">
-        <button className="hidden items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted md:flex">
-          Vision Capital <ChevronDown size={14} />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setWorkspaceOpen((v) => !v)}
+            className="hidden items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted md:flex cursor-pointer"
+          >
+            {selectedWorkspace} <ChevronDown size={14} />
+          </button>
+          <AnimatePresence>
+            {workspaceOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                className="absolute right-0 top-9 z-40 w-52 overflow-hidden rounded-xl border border-border bg-popover shadow-2xl"
+              >
+                <div className="border-b border-border px-3 py-2 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Select Workspace
+                </div>
+                <div className="p-1 space-y-0.5">
+                  {[
+                    "Vision Capital",
+                    "Vision Capital · Global",
+                    "Terravue Sandbox",
+                    "Al Nakhla JV",
+                  ].map((ws) => (
+                    <button
+                      key={ws}
+                      onClick={() => {
+                        setSelectedWorkspace(ws);
+                        setWorkspaceOpen(false);
+                        toast.success(`Switched workspace: ${ws}`);
+                      }}
+                      className={cls(
+                        "w-full text-left rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-muted cursor-pointer",
+                        selectedWorkspace === ws ? "text-[var(--color-accent)] bg-muted/40" : "text-foreground"
+                      )}
+                    >
+                      {ws}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         <div className="relative">
           <button
@@ -135,14 +208,62 @@ export function TopBar({ onOpenSidebar }: Props) {
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-background pl-1 pr-2 py-1">
-          <div className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-purple)] text-xs font-bold text-white">
-            AK
-          </div>
-          <div className="hidden text-left md:block">
-            <p className="text-xs font-semibold leading-tight">Amir Khan</p>
-            <p className="text-[10px] text-muted-foreground">Chief Investment Officer</p>
-          </div>
+        <div className="relative">
+          <button
+            onClick={() => setProfileOpen((v) => !v)}
+            className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-background pl-1 pr-2 py-1 text-left hover:bg-muted/50"
+          >
+            <div className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-purple)] text-xs font-bold text-white">
+              {userInitials}
+            </div>
+             <div className="hidden text-left md:block">
+              <p className="text-xs font-semibold leading-tight">{userName}</p>
+              <p className="text-[10px] text-muted-foreground">{userTitle}</p>
+            </div>
+          </button>
+          <AnimatePresence>
+            {profileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                className="absolute right-0 top-10 z-40 w-48 overflow-hidden rounded-xl border border-border bg-popover shadow-2xl"
+              >
+                <div className="border-b border-border px-4 py-2.5 text-left">
+                  <p className="text-xs font-semibold text-foreground">{userName}</p>
+                  <p className="text-[10px] text-muted-foreground">{userEmail}</p>
+                </div>
+                <div className="p-1 space-y-0.5">
+                  <Link
+                    to="/profile"
+                    onClick={() => setProfileOpen(false)}
+                    className="block rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    My Profile
+                  </Link>
+                  <Link
+                    to="/settings"
+                    onClick={() => setProfileOpen(false)}
+                    className="block rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem("auth_token");
+                      localStorage.removeItem("user_email");
+                      localStorage.removeItem("user_name");
+                      toast.success("Successfully logged out.");
+                      navigate("/login", { replace: true });
+                    }}
+                    className="w-full text-left cursor-pointer rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[var(--color-orange)] transition-colors hover:bg-[var(--color-orange)]/10"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </header>
