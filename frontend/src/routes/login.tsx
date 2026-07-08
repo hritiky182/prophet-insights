@@ -63,7 +63,7 @@ export default function Login() {
   // Demo credentials autofilled by default
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[oklch(0.14_0.02_250)] text-foreground flex">
+    <div className="dark relative min-h-screen w-full overflow-hidden bg-[oklch(0.14_0.02_250)] text-foreground flex">
       {/* Background Graphic Grid */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,oklch(0.62_0.19_250_/_0.15),transparent_70%)]" />
 
@@ -77,7 +77,7 @@ export default function Login() {
             <Building2 size={20} />
           </div>
           <div>
-            <h1 className="font-display text-lg font-bold tracking-tight">Terravue</h1>
+            <h1 className="font-display text-lg font-bold tracking-tight text-white">Terravue</h1>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Real Estate Intelligence</p>
           </div>
         </div>
