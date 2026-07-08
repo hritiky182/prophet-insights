@@ -7,8 +7,8 @@ import { toast } from "sonner";
 export default function Login() {
   const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("amir.khan@visioncapital.com");
+  const [password, setPassword] = useState("••••••••••••");
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -60,11 +60,7 @@ export default function Login() {
     }, 1800);
   };
 
-  const useDemoCredentials = () => {
-    setEmail("amir.khan@visioncapital.com");
-    setPassword("••••••••••••");
-    toast.info("Demo credentials pre-filled.");
-  };
+  // Demo credentials autofilled by default
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[oklch(0.14_0.02_250)] text-foreground flex">
@@ -230,20 +226,7 @@ export default function Login() {
                     </p>
                   </div>
 
-                  <div className="relative my-6 flex items-center justify-center">
-                    <span className="absolute inset-x-0 h-px bg-border/50" />
-                    <span className="relative bg-[oklch(0.16_0.02_250)] px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                      Evaluation Access
-                    </span>
-                  </div>
 
-                  <button
-                    type="button"
-                    onClick={useDemoCredentials}
-                    className="w-full cursor-pointer rounded-xl border border-border/60 bg-muted/20 hover:bg-muted/50 py-2 text-xs font-semibold text-muted-foreground hover:text-white transition-all"
-                  >
-                    Autofill Demo Credentials
-                  </button>
                 </motion.form>
               ) : (
                 <motion.form
